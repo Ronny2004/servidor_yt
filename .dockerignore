@@ -1,0 +1,19 @@
+# Node.js
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+.env
+
+# Git
+.git
+.gitignore
+
+# Build cache
+.cache
+dist
