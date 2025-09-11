@@ -15,20 +15,24 @@ if (!fs.existsSync(CACHE_DIR)) {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
 }
 
+// Endpoint principal: streaming desde YouTube
 app.get("/stream", (req, res) => {
-  const url = req.query.url;
+  let url = req.query.url;
   if (!url) {
     return res.status(400).send("Falta parámetro url");
   }
 
-  // Extraer videoId de la URL de YouTube
-  const videoIdMatch = url.match(/v=([a-zA-Z0-9_-]{11})/);
-  if (!videoIdMatch) {
-    return res.status(400).send("URL inválida");
+  // Reconstruir la URL si hay más parámetros separados por Express
+  const extraParams = { ...req.query };
+  delete extraParams.url;
+  const queryString = new URLSearchParams(extraParams).toString();
+  if (queryString) {
+    url += "&" + queryString;
   }
 
-  const videoId = videoIdMatch[1];
-  const filePath = path.join(CACHE_DIR, `${videoId}.webm`);
+  // Nombre de archivo cacheado único (base64 del URL completo)
+  const safeName = Buffer.from(url).toString("base64").replace(/[/+=]/g, "");
+  const filePath = path.join(CACHE_DIR, `${safeName}.webm`);
 
   // Si ya existe el archivo en cache, lo servimos
   if (fs.existsSync(filePath)) {
@@ -57,6 +61,12 @@ app.get("/stream", (req, res) => {
   });
 });
 
+// Endpoint de health check
+app.get("/health", (req, res) => {
+  res.send("OK");
+});
+
+// Función para servir el archivo con soporte de rangos
 function sendFile(req, res, filePath) {
   const stat = fs.statSync(filePath);
   const range = req.headers.range;
