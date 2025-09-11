@@ -1,13 +1,14 @@
 # Imagen base oficial de Node
 FROM node:18
 
-# Instalar dependencias del sistema y yt-dlp desde apt
+# Instalar dependencias del sistema y la última versión de yt-dlp
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     ffmpeg \
-    yt-dlp \
-    && rm -rf /var/lib/apt/lists/*
+    ca-certificates \
+ && pip3 install --upgrade yt-dlp --break-system-packages \
+ && rm -rf /var/lib/apt/lists/*
 
 # Crear directorio de la app
 WORKDIR /app
@@ -19,7 +20,7 @@ RUN npm install --omit=dev
 # Copiar el resto del código
 COPY . .
 
-# Exponer puerto
+# Exponer puerto (Railway inyecta automáticamente el PORT)
 EXPOSE 3000
 
 # Comando de inicio
