@@ -1,12 +1,12 @@
 # Imagen base oficial de Node
 FROM node:18
 
-# Instalar dependencias del sistema y yt-dlp
+# Instalar dependencias del sistema y yt-dlp desde apt
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     ffmpeg \
-    && pip3 install yt-dlp \
+    yt-dlp \
     && rm -rf /var/lib/apt/lists/*
 
 # Crear directorio de la app
@@ -16,11 +16,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 
-# Copiar el resto del código de la app
+# Copiar el resto del código
 COPY . .
 
-# Exponer puerto de la app
+# Exponer puerto
 EXPOSE 3000
 
-# Comando de inicio del servidor
+# Comando de inicio
 CMD ["node", "index.js"]
