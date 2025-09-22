@@ -22,7 +22,7 @@ app.get("/stream", (req, res) => {
     return res.status(400).send("Falta parámetro url");
   }
 
-  // Reconstruir la URL si hay más parámetros separados por Express
+  // Reconstruir la URL si vienen parámetros adicionales
   const extraParams = { ...req.query };
   delete extraParams.url;
   const queryString = new URLSearchParams(extraParams).toString();
@@ -30,7 +30,7 @@ app.get("/stream", (req, res) => {
     url += "&" + queryString;
   }
 
-  // Nombre de archivo cacheado único (base64 del URL completo)
+  // Nombre único para el archivo cacheado
   const safeName = Buffer.from(url).toString("base64").replace(/[/+=]/g, "");
   const filePath = path.join(CACHE_DIR, `${safeName}.webm`);
 
@@ -42,7 +42,7 @@ app.get("/stream", (req, res) => {
   // Si no existe, descargar con yt-dlp
   console.log("Descargando:", url);
   const yt = spawn("yt-dlp", [
-    "-f", "bestaudio",
+    "-f", "bestaudio[ext=webm]/bestaudio/best",
     "-o", filePath,
     url
   ]);
@@ -66,7 +66,7 @@ app.get("/health", (req, res) => {
   res.send("OK");
 });
 
-// Función para servir el archivo con soporte de rangos
+// Función para servir archivo con soporte de rangos
 function sendFile(req, res, filePath) {
   const stat = fs.statSync(filePath);
   const range = req.headers.range;
@@ -80,7 +80,7 @@ function sendFile(req, res, filePath) {
     return fs.createReadStream(filePath).pipe(res);
   }
 
-  // Parse del rango
+  // Parsear rango
   const parts = range.replace(/bytes=/, "").split("-");
   const start = parseInt(parts[0], 10);
   const end = parts[1] ? parseInt(parts[1], 10) : stat.size - 1;

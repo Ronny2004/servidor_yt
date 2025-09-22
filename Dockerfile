@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     ffmpeg \
     ca-certificates \
- && pip3 install --upgrade yt-dlp --break-system-packages \
+ && pip3 install --upgrade yt-dlp \
  && rm -rf /var/lib/apt/lists/*
 
 # Crear directorio de la app
@@ -20,7 +20,7 @@ RUN npm install --omit=dev
 # Copiar el resto del código
 COPY . .
 
-# Exponer puerto (Railway inyecta automáticamente el PORT)
+# Exponer puerto (Render/Railway inyectan PORT automáticamente)
 EXPOSE 3000
 
 # Comando de inicio
