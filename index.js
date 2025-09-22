@@ -40,9 +40,9 @@ app.get("/stream", (req, res) => {
   }
 
   // Si no existe, descargar con yt-dlp
-  console.log("Descargando:", url);
   const yt = spawn("yt-dlp", [
-    "-f", "bestaudio[ext=webm]/bestaudio/best",
+    "--cookies", path.join(__dirname, "cookies.txt"),
+    "-f", "bestaudio",
     "-o", filePath,
     url
   ]);

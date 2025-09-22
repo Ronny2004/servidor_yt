@@ -17,10 +17,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 
-# Copiar el resto del código
+# Copiar el resto del código, incluyendo cookies.txt
 COPY . .
 
-# Exponer puerto (Render/Railway inyectan PORT automáticamente)
+# Exponer puerto (Render/Railway usan PORT automáticamente)
 EXPOSE 3000
 
 # Comando de inicio
