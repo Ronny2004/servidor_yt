@@ -1,7 +1,7 @@
 # Imagen base oficial de Node
 FROM node:18
 
-# Instalar dependencias del sistema (sin pip)
+# Instalar dependencias del sistema + yt-dlp
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     curl \
@@ -17,7 +17,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 
-# Copiar el resto del código (incluyendo cookies.txt si existe)
+# Copiar el resto del código (incluyendo cookies.txt si lo tienes)
 COPY . .
 
 # Exponer puerto (Render usa PORT automáticamente)

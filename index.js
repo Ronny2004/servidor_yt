@@ -39,13 +39,18 @@ app.get("/stream", (req, res) => {
     return sendFile(req, res, filePath);
   }
 
-  // Si no existe, descargar con yt-dlp
-  const yt = spawn("yt-dlp", [
-    "--cookies", path.join(__dirname, "cookies.txt"),
-    "-f", "bestaudio",
-    "-o", filePath,
-    url
-  ]);
+  // Construir argumentos para yt-dlp
+  const args = ["-f", "bestaudio", "-o", filePath, url];
+  const cookieFile = path.join(__dirname, "cookies.txt");
+
+  // Solo usar cookies si el archivo existe y tiene contenido
+  if (fs.existsSync(cookieFile) && fs.statSync(cookieFile).size > 0) {
+    args.unshift(cookieFile);
+    args.unshift("--cookies");
+  }
+
+  // Descargar con yt-dlp
+  const yt = spawn("yt-dlp", args);
 
   yt.stderr.on("data", (data) => {
     console.error("yt-dlp error:", data.toString());
